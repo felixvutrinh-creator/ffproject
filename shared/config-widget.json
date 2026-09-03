@@ -1,0 +1,22 @@
+{
+    "version": "1.0.0",
+    "grid": {"columns": 6, "rows": 6},
+    "widgets": [
+        {
+            "id":"clock_1",
+            "type":"clock",
+            "position": {"col":1, "row":1},
+            "size": "medium",
+            "options": {"format": "24h", "showSeconds": false, "timezone": "UTC+2" }
+        },
+        {
+
+            "id":"weather_1",
+            "type":"weather",
+            "position": {"col":3, "row":1},
+            "size": "small",
+            "options": {"location": "Berlin", "units": "metric", "language": "de" }
+        }
+
+    ]
+}
