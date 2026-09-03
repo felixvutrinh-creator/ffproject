@@ -1,0 +1,33 @@
+{
+    "version": "1.0.0",
+    "grid": {"columns": 6, "rows": 4},
+    "widgets": [
+        {
+            "id":"clock_1",
+            "type":"clock",
+            "position": {"col":1, "row":1},
+            "size": "medium",
+            "options": {"format": "24h", "showSeconds": false, "timezone": "Europe/Berlin" }
+        },
+        {
+
+            "id":"weather_1",
+            "type":"weather",
+            "position": {"col":3, "row":1},
+            "size": "small",
+            "options": {"location": "Berlin", "units": "metric", "language": "de" }
+        }
+        
+    ],
+    "device": {
+        "theme": "dark",
+        "language": "de",
+        "brightness": 100,
+        "timezone": "Europe/Berlin",
+        "nightMode": {"enabled": true, "start": "22:00", "end": "06:00", "brightness": 30}
+
+
+
+
+    }
+}
