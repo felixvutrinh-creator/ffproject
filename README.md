@@ -6,6 +6,7 @@ Ein dekoratives Smart Display mit frei konfigurierbaren Widgets, als eigenständ
 Aktuell im Prototyp-Stadium, langfristig geplant als eigenständiges Gerät mit selbstentworfenem PCB
 --------------------------------
 Idee
+--------------------
 Nutzer stellt über ein Config Interface ein, welche Widgets auf dem Display angezeigt werden. Diese können in "Apple-Style" Uhren, Wetteranzeigen, Bahnverbindungen oder Musikanzeigen etc. darstellen.
 
 ----------------------------------
