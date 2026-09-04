@@ -1,4 +1,4 @@
-const CONFIG_URL = "../shared/config-widget.json";
+const CONFIG_URL = "../../shared/config-widget.json";
 // der folgende Part ist bisschen vibecoded um ehrlich zu sein. Ich kann nämlich kein Javascript, Leon muss das übernehmen//
 const SIZES = {
   small:  { cols: 2, rows: 2 },
