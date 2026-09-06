@@ -1,12 +1,13 @@
+from flask import Flask, jsonify
 from datetime import datetime
-from widgets.base import BaseWidget
+from flask_cors import CORS
 
-class ClockWidget(BaseWidget):
-    name = "clock"
+app = Flask(__name__)
+CORS(app)  # ZUGRIFF vom Frontend halt über CORS amk
 
-    def fetch(self) -> dict:
-        now = datetime.now()
-        return {
-            "time": now.strftime("%H:%M:%S"),
-            "date": now.strftime("%d.%m.%Y")
-        }
+@app.route("/api/time")
+def get_time():
+    return jsonify({"time": datetime.now().strftime("%H:%M:%S")})
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5001)
