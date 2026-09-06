@@ -1,0 +1,19 @@
+{
+  "clock": {
+    "name": "clock",
+    "data": {
+      "time": "18:45:48",
+      "date": "06.09.2026"
+    },
+    "error": null
+  },
+  "weather": {
+    "name": "weather",
+    "data": {
+      "temperature": 20.1,
+      "wind_speed": 4.1,
+      "condition": "\u00dcberwiegend klar"
+    },
+    "error": null
+  }
+}
