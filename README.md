@@ -11,3 +11,5 @@ Nutzer stellt über ein Config Interface ein, welche Widgets auf dem Display ang
 
 ----------------------------------
 Dev-Log
+
+Frontend mit Config Ui steht. Zur zeit noch sehr pragmatisch und basic. Später mit ordentlichem Design und technisch noch ausbauen. 

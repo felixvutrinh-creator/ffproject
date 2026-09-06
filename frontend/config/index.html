@@ -1,8 +1,51 @@
 <!DOCTYPE html>
 
 <html lang="de">
+    
+<head>
+    <meta charset ="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Projekt - Konfiguration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+    <header class="topbar">
+        <h1> Display konfigurieren</h1>
+        <button id="save" class="btn" disabled title="felix mach deine arbeit">Speichern</button>
+    </header>
+    
+<main class="layout">
+    <section class="panel preview-panel">
+        <h2>Vorschau</h2>
+        <div id="preview" class="preview-grid"></div>
+        <p id="preview-hint" class="hint">Vorschau der konfigurierten Anzeige</p>
+
+    </section>
+
+    <aside class="sidebar">
+
+    <section class="panel">
+        <h2>Widget</h2>
+        <ul id="library" class="library"></ul>
+        
+
+    </section>
+
+    <section class="panel">
+        <h2>Konfiguration</h2>
+        <div id="widget-options" class="widget-options">
+            <p class="hint">Kein Widget ausgewählt</p>
+        </div>
+    </section>
+
+    <section class="panel">
+         <h2>Gerät</h2>
+        <div id="device-options" class="device-options"> </div>
+    </section>
+    </aside>
+    </main>
+
+    <script src="config.js"></script>
+</body>
 </html>
-    <meta charset="UTF-8"
-
-
