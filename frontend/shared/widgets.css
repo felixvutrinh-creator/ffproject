@@ -1,0 +1,31 @@
+/* Aussehen der Widget-Inhalte - geteilt zwischen Display und Config-Vorschau,
+   damit die Vorschau wirklich zeigt, wie das Display aussehen wird.
+   Die Kachel selbst (Hintergrund, Rahmen) gestaltet jede Oberflaeche selbst. */
+
+.clock-time {
+  font-size: clamp(20px, 7cqw, 96px);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-date {
+  font-size: clamp(10px, 2cqw, 24px);
+  color: #8a8a8a;
+}
+
+.weather-temp {
+  font-size: clamp(18px, 5cqw, 64px);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.weather-condition {
+  font-size: clamp(9px, 1.6cqw, 20px);
+  color: #8a8a8a;
+}
+
+.widget-placeholder {
+  font-size: clamp(10px, 1.8cqw, 20px);
+  color: #8a8a8a;
+}
