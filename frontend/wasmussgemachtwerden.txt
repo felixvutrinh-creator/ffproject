@@ -1,0 +1,20 @@
+Hallo Leon
+
+Paar Dinge die noch gemacht werden müssen.
+
+Alle Formularfelder sind disabled, es fehlt noch ein Schreib Endpunkt
+Eigentlich ist so gut wie alles disabled.
+Display pollt aktuell alle 15s, geplant ist SSE, dann kann das Polling raus.
+State muss noch nach ID statt Typ umgestellt werden . Ist felix seine Aufgabe. ---> stateFor() in render.js
+
+Mach mal Drag and Drop, Pointer Events statt Mouse Events damit das später auf Handy klappt
+device block wird noch nirgends genutzt, Display und Config UI sollten sie auswerten.
+
+weather_1 überlappt clock_1 in der Config --> wird nie angezeigt. 
+Wetter Optionen wirken noch nicht, weil Config auf Berlin steht aber Backend sagt Magdeburg
+Inter in style.css ist nie geladen worden
+
+Ein neuer Widget-Typ muss in WIDGET_TYPES und in RENDERERS eingetragen werden ---> render.js
+Uhr läuft bewusst clientseitig und kommt nicht vom Backend. Browser kennt ja die Zeit
+Fehler bleiben Widget lokal, ein kaputtes Widget darf nicht den ganzen Schirm leeren
+

@@ -1,120 +1,102 @@
+// Konfigurations-Oberflaeche.
+//
+// Layout und Widget-Darstellung kommen aus ../shared/render.js - derselben
+// Schicht, die das Display benutzt. Die Vorschau zeigt deshalb echte Widgets
+// und nicht nur graue Kacheln mit Typnamen.
+//
+// Speichern gibt es noch nicht: dafuer fehlt ein Schreib-Endpunkt im Backend.
+
+import {
+  SIZES, WIDGET_TYPES,
+  placeWidgets, applyGrid, applyPosition,
+  renderWidget, tickClocks, loadJSON,
+} from "../shared/render.js";
+
 const CONFIG_URL = "../../shared/config-widget.json";
-// der folgende Part ist bisschen vibecoded um ehrlich zu sein. Ich kann nämlich kein Javascript, Leon muss das übernehmen//
-const SIZES = {
-  small:  { cols: 2, rows: 2 },
-  medium: { cols: 4, rows: 2 },
-  large:  { cols: 4, rows: 4 },
-};
-const WIDGET_TYPES = {
-  clock: {
-    label: "Uhr",
-    fields: [
-      { key: "format", label: "Format", type: "select", choices: ["24h", "12h"] },
-      { key: "showSeconds", label: "Sekunden", type: "boolean" },
-      { key: "timezone", label: "Zeitzone", type: "text" },
-    ],
-  },
-  weather: {
-    label: "Wetter",
-    fields: [
-      { key: "location", label: "Ort", type: "text" },
-      { key: "units", label: "Einheiten", type: "select", choices: ["metric", "imperial"] },
-      { key: "language", label: "Sprache", type: "text" },
-    ],
-  },
-};
+const STATE_URL = "http://localhost:5001/api/state";
+const STATE_INTERVAL = 15000;
+const CLOCK_INTERVAL = 1000;
 
 let config = null;
+let state = {};
 let selectedId = null;
+const tiles = new Map();   // Widget-ID -> Kachel-Element
 
-async function load() {
+// ---------- Start ----------
+
+async function start() {
   try {
-    const res = await fetch(CONFIG_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    config = await res.json();
+    config = await loadJSON(CONFIG_URL);
   } catch (err) {
-    // Kaputte oder fehlende Config darf die Oberfläche nicht abraeumen.
     console.error("Config konnte nicht geladen werden:", err);
     document.getElementById("preview-hint").textContent =
-      "Config konnte nicht geladen werden. Laeuft ein lokaler Server?";
+      "Config konnte nicht geladen werden. Läuft ein lokaler Server?";
     return;
   }
-  renderAll();
+
+  renderLibrary();
+  renderDeviceOptions();
+  buildPreview();
+  renderWidgetOptions();
+
+  await refreshState();
+  setInterval(refreshState, STATE_INTERVAL);
+  setInterval(() => tickClocks(config, tiles), CLOCK_INTERVAL);
 }
 
-function renderAll() {
-  renderPreview();
-  renderLibrary();
-  renderWidgetOptions();
-  renderDeviceOptions();
+// Das Backend ist beim Konfigurieren nicht zwingend an. Fehlt es, zeigen die
+// Widgets ihren Platzhalter - die Uhr laeuft trotzdem.
+async function refreshState() {
+  try {
+    state = await loadJSON(STATE_URL);
+  } catch {
+    state = {};
+  }
+  paintTiles();
 }
-function renderPreview() {
+
+// ---------- Vorschau ----------
+
+function buildPreview() {
   const grid = document.getElementById("preview");
   const hint = document.getElementById("preview-hint");
-  const cols = config.grid?.columns ?? 6;
-  const rows = config.grid?.rows ?? 4;
+  const { placed, skipped, cols, rows } = placeWidgets(config);
 
   grid.innerHTML = "";
-  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+  tiles.clear();
+  applyGrid(grid, cols, rows);
 
-   const taken = new Set();
-  const skipped = [];
+  for (const { widget, col, row, size } of placed) {
+    const el = document.createElement("div");
+    el.className = "tile" + (widget.id === selectedId ? " selected" : "");
+    el.dataset.id = widget.id;
+    applyPosition(el, col, row, size);
 
-  for (const w of config.widgets ?? []) {
-    const size = SIZES[w.size];
-    if (!size) {
-      skipped.push(`${w.id} (unbekannte Groesse "${w.size}")`);
-      continue;
-    }
+    el.addEventListener("click", () => select(widget.id));
 
-    const col = w.position?.col ?? 1;
-    const row = w.position?.row ?? 1;
-
-    if (col < 1 || row < 1 || col + size.cols - 1 > cols || row + size.rows - 1 > rows) {
-      skipped.push(`${w.id} (passt nicht ins Raster)`);
-      continue;
-    }
-
-    const cells = [];
-    for (let c = col; c < col + size.cols; c++) {
-      for (let r = row; r < row + size.rows; r++) cells.push(`${c}:${r}`);
-    }
-    if (cells.some(cell => taken.has(cell))) {
-      skipped.push(`${w.id} (Platz belegt)`);
-      continue;
-    }
-    cells.forEach(cell => taken.add(cell));
-
-    grid.appendChild(createTile(w, col, row, size));
+    grid.appendChild(el);
+    tiles.set(widget.id, el);
   }
 
+  paintTiles();
+
+  // Im Config-UI steht sehr wohl jemand davor, der es lesen kann.
   hint.textContent = skipped.length
-    ? `Nicht angezeigt: ${skipped.join(", ")}`
+    ? "Nicht angezeigt: " + skipped.map(s => `${s.id} (${s.reason})`).join(", ")
     : "";
 }
 
-function createTile(w, col, row, size) {
-  const el = document.createElement("div");
-  el.className = "tile" + (w.id === selectedId ? " selected" : "");
-  el.style.gridColumn = `${col} / span ${size.cols}`;
-  el.style.gridRow = `${row} / span ${size.rows}`;
+function paintTiles() {
+  for (const w of config.widgets ?? []) {
+    const el = tiles.get(w.id);
+    if (el) renderWidget(el, w, state, config);
+  }
+}
 
-  const type = document.createElement("span");
-  type.className = "tile-type";
-  type.textContent = WIDGET_TYPES[w.type]?.label ?? w.type;
-
-  const meta = document.createElement("span");
-  meta.className = "tile-meta";
-  meta.textContent = `${w.size} · ${col}/${row}`;
-
-  el.append(type, meta);
-  el.addEventListener("click", () => {
-    selectedId = w.id;
-    renderPreview();
-    renderWidgetOptions();
-  });
-  return el;
+function select(id) {
+  selectedId = id;
+  for (const [wid, el] of tiles) el.classList.toggle("selected", wid === id);
+  renderWidgetOptions();
 }
 
 // ---------- Widget-Auswahl ----------
@@ -123,13 +105,13 @@ function renderLibrary() {
   const list = document.getElementById("library");
   list.innerHTML = "";
 
-  for (const [type, def] of Object.entries(WIDGET_TYPES)) {
+  for (const def of Object.values(WIDGET_TYPES)) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     btn.textContent = `+ ${def.label}`;
     // Hinzufuegen braucht freie Platzsuche und Speichern - beides spaeter.
     btn.disabled = true;
-    btn.title = "Hinzufuegen kommt, sobald gespeichert werden kann";
+    btn.title = "Hinzufügen kommt, sobald gespeichert werden kann";
     li.appendChild(btn);
     list.appendChild(li);
   }
@@ -143,17 +125,18 @@ function renderWidgetOptions() {
 
   const w = (config.widgets ?? []).find(x => x.id === selectedId);
   if (!w) {
-    box.innerHTML = '<p class="hint">Kein Widget ausgewählt.</p>';
+    box.innerHTML = '<p class="hint">Kein Widget ausgewählt</p>';
     return;
   }
 
   const def = WIDGET_TYPES[w.type];
   if (!def) {
-    box.innerHTML = `<p class="hint">Unbekannter Typ "${w.type}".</p>`;
+    box.innerHTML = `<p class="hint">Unbekannter Typ "${w.type}"</p>`;
     return;
   }
 
   box.appendChild(field({ label: "Größe", type: "select", choices: Object.keys(SIZES) }, w.size));
+  box.appendChild(field({ label: "Position", type: "text" }, `${w.position?.col} / ${w.position?.row}`));
   for (const f of def.fields) {
     box.appendChild(field(f, w.options?.[f.key]));
   }
@@ -176,7 +159,7 @@ function renderDeviceOptions() {
 }
 
 // ---------- Formularzeile ----------
-// Alle Felder sind vorerst deaktiviert: anzeigen ja, aendern erst mit Backend.
+// Alle Felder sind deaktiviert: anzeigen ja, aendern erst mit Schreib-Endpunkt.
 
 function field(def, value) {
   const row = document.createElement("div");
@@ -210,7 +193,4 @@ function field(def, value) {
   return row;
 }
 
-load();
-
-
-// Ich hab kein Bock mehr auf Frontend, Leon muss das jetzt machen. Ich habs nur angefangen, damit wir was haben.//
+start();
