@@ -38,3 +38,6 @@ class StocksWidget(BaseWidget):
             "state": self._determine_state(quoted_at),
             "stale": datetime.now(timezone.utc) - quoted_at > self.STATE_AFTER
         }
+
+
+    # API Keys müssen noch in der .env rein. Mach ich demnächst.
