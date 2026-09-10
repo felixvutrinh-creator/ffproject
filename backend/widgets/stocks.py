@@ -9,7 +9,7 @@ class StocksWidget(BaseWidget):
     poll_interval = 300
 
     BASE_URL = "https://finnhub.io/api/v1/quote"
-    STATE_AFTER = timedelta(minutes=15)
+    STALE_AFTER = timedelta(minutes=15)
 
     def __init__(self, symbol="AAPL", currency="USD"):
         self.symbol = symbol
@@ -31,13 +31,12 @@ class StocksWidget(BaseWidget):
             "symbol": self.symbol,
             "currency": self.currency,
             "price": round(data["c"], 2),
-            "change": round(data["d"] - data["pc"], 2),
+            "change": round(data["d"], 2),
             "percent_change": round(data["dp"], 2),
             "previous_close": round(data["pc"], 2),
             "quoted_at": quoted_at.isoformat(),
-            "state": self._determine_state(quoted_at),
-            "stale": datetime.now(timezone.utc) - quoted_at > self.STATE_AFTER
+            "stale": datetime.now(timezone.utc) - quoted_at > self.STALE_AFTER
         }
 
 
-    # API Keys müssen noch in der .env rein. Mach ich demnächst.
+    

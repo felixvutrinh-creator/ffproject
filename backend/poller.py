@@ -2,11 +2,13 @@ import time
 import threading
 from widgets.clock import ClockWidget
 from widgets.weather import WeatherWidget
+from widgets.stocks import StocksWidget
 from state import state
 
 WIDGETS = [
     ClockWidget(),
     WeatherWidget(),
+    StocksWidget(),
 ]
 
 TICK = 5

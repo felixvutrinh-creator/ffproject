@@ -12,5 +12,12 @@ class BaseWidget(ABC): # Basisklasse für alle Widgets
         try:
             return {"name": self.name, "data": self.fetch(), "error": None}
         except Exception as e:
-            return {"name": self.name, "data": None, "error": str(e)}
-    
+            return {"name": self.name, "data": None, "error": self._error_text(e)}
+
+    @staticmethod
+    def _error_text(e: Exception) -> str:
+        response = getattr(e, "response", None)
+        if response is not None:
+            return f"HTTP {response.status_code}"
+        return type(e).__name__
+       

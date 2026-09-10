@@ -16,6 +16,7 @@ class StateManager:
         return self._state
 
     def save(self):
+        os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
         with open(STATE_FILE, "w") as f:
             json.dump(self._state, f, indent=2)
 

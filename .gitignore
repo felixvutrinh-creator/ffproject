@@ -1,6 +1,6 @@
 venv/
 __pycache__/
 *.pyc
-data/state.json
+backend/data/state.json
 .env
 .DS_Store
