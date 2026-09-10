@@ -81,7 +81,7 @@ export function applyPosition(el, col, row, size) {
 
 
 export function stateFor(widget, state) {
-  return state?.[widget.type] ?? null;
+  return state?.[widget.id] ?? null;
 }
 
 // renderer

@@ -4,15 +4,21 @@ class BaseWidget(ABC): # Basisklasse für alle Widgets
 
     name: str = "base"  # wird von jedem Widget überschrieben
     poll_interval: int = 30  # Sekunden, wie oft das Widget neue Daten holt. Widgets können das selbst überschreiben
-    @abstractmethod
-    def fetch(self) -> dict: # Holt aktuelle Daten
-        raise NotImplementedError
 
-    def safe_fetch(self) -> dict: # Fängt Fehler ab, damit nicht ganzes Backend crashed auf lock sondern nur das Widget einen Fehler spuckt
+    def __init__(self, widget_id: str, options: dict | None = None):
+        self.id = widget_id
+        self.options = options or {}
+
+    @abstractmethod
+    def fetch(self) -> dict:
+        raise NotImplementedError("fetch() muss in jedem Widget implementiert werden")
+
+    def safe_fetch(self) -> dict:
         try:
-            return {"name": self.name, "data": self.fetch(), "error": None}
+            return{"id": self.id, "type": self.name, "data": self.fetch(), "error": None}
         except Exception as e:
-            return {"name": self.name, "data": None, "error": self._error_text(e)}
+            print(f"[{self.id}] {e}")
+            return {"id": self.id, "type": self.name, "data": None, "error": self._error_text(e)}
 
     @staticmethod
     def _error_text(e: Exception) -> str:

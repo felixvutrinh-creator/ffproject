@@ -11,9 +11,10 @@ class StocksWidget(BaseWidget):
     BASE_URL = "https://finnhub.io/api/v1/quote"
     STALE_AFTER = timedelta(minutes=15)
 
-    def __init__(self, symbol="AAPL", currency="USD"):
-        self.symbol = symbol
-        self.currency = currency
+    def __init__(self, widget_id, options=None):
+        super().__init__(widget_id ,options)
+        self.symbol = self.options.get("symbol", "AAPL")
+        self.currency = self.options.get("currency", "USD")
     def fetch(self) -> dict:
         api_key = os.environ.get("FINNHUB_API_KEY")
         if not api_key:

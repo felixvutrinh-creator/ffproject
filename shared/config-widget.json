@@ -13,9 +13,18 @@
 
             "id":"weather_1",
             "type":"weather",
-            "position": {"col":3, "row":1},
+            "position": {"col":5, "row":1},
             "size": "small",
             "options": {"location": "Berlin", "units": "metric", "language": "de" }
+        },
+        {
+            "id": "stocks_1",
+            "type": "stocks",
+            "position": {"col": 1, "row": 3},
+            "size": "small",
+            "options": {"symbol": "AAPL", "currency": "USD"}
+
+
         }
         
     ],
